@@ -19,7 +19,9 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             while file_data:
                 file.write(file_data)
                 file_data = self.request.recv(1024)
-
+        print(f"File {server_file_name} received from the client.")
+        self.request.close()
+        self.server.server_close()
 
 if __name__ == "__main__":
     # Set the server host and port
@@ -27,4 +29,8 @@ if __name__ == "__main__":
 
     # Create the TCP server
     with socketserver.TCPServer((HOST, PORT), MyTCPHandler) as server:
-        server.serve_forever()
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            # Handle Ctrl+C to shut down the server gracefully
+            server.server_close()
